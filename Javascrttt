@@ -1,0 +1,147 @@
+// Random JavaScript Project
+// Demonstrating functions, classes, async operations, and DOM manipulation
+
+// Global Constants and Variables
+const API_URL = "https://jsonplaceholder.typicode.com/posts";
+let dataCache = [];
+
+// Utility Functions
+function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomString(length = 8) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return Array.from({ length }, () => chars.charAt(randomInt(0, chars.length - 1))).join('');
+}
+
+// Asynchronous Function to Fetch Data
+async function fetchData() {
+    try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Network response was not ok");
+        dataCache = await response.json();
+        console.log("Data fetched successfully:", dataCache);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
+// DOM Manipulation Example
+function createElement(tag, text = "", classes = []) {
+    const element = document.createElement(tag);
+    element.textContent = text;
+    classes.forEach(cls => element.classList.add(cls));
+    return element;
+}
+
+function displayPosts(posts) {
+    const container = document.getElementById("posts-container");
+    container.innerHTML = ""; // Clear previous content
+    posts.forEach(post => {
+        const postElement = createElement("div", "", ["post"]);
+        const title = createElement("h3", post.title, ["post-title"]);
+        const body = createElement("p", post.body, ["post-body"]);
+        postElement.appendChild(title);
+        postElement.appendChild(body);
+        container.appendChild(postElement);
+    });
+}
+
+// Event Listener Example
+document.getElementById("fetch-posts-btn").addEventListener("click", async () => {
+    await fetchData();
+    displayPosts(dataCache.slice(0, 5)); // Display first 5 posts
+});
+
+// Simple Class Example
+class Person {
+    constructor(firstName, lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    getFullName() {
+        return `${this.firstName} ${this.lastName}`;
+    }
+
+    static randomPerson() {
+        const firstNames = ["Alice", "Bob", "Charlie", "David", "Eva"];
+        const lastNames = ["Smith", "Johnson", "Brown", "Taylor", "Anderson"];
+        return new Person(
+            firstNames[randomInt(0, firstNames.length - 1)],
+            lastNames[randomInt(0, lastNames.length - 1)]
+        );
+    }
+}
+
+// Array Manipulation Example
+const numbers = Array.from({ length: 10 }, () => randomInt(1, 100));
+console.log("Original numbers:", numbers);
+
+const sortedNumbers = numbers.sort((a, b) => a - b);
+console.log("Sorted numbers:", sortedNumbers);
+
+const evenNumbers = numbers.filter(num => num % 2 === 0);
+console.log("Even numbers:", evenNumbers);
+
+const doubledNumbers = numbers.map(num => num * 2);
+console.log("Doubled numbers:", doubledNumbers);
+
+// Async/Await with Timeout Example
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function delayedLog(message, delayTime) {
+    await delay(delayTime);
+    console.log(message);
+}
+
+async function runDelayedLogs() {
+    await delayedLog("This is the first message", 1000);
+    await delayedLog("This is the second message", 2000);
+    await delayedLog("This is the third message", 3000);
+}
+runDelayedLogs();
+
+// Local Storage Example
+function saveToLocalStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getFromLocalStorage(key) {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : null;
+}
+
+// Save random data to localStorage
+saveToLocalStorage("randomData", { id: 1, name: randomString(10) });
+console.log("Random data from localStorage:", getFromLocalStorage("randomData"));
+
+// Canvas Example
+function drawRandomRectangles() {
+    const canvas = document.getElementById("canvas");
+    if (!canvas.getContext) return;
+
+    const ctx = canvas.getContext("2d");
+    for (let i = 0; i < 5; i++) {
+        ctx.fillStyle = `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
+        ctx.fillRect(randomInt(0, 150), randomInt(0, 150), randomInt(20, 50), randomInt(20, 50));
+    }
+}
+drawRandomRectangles();
+
+// Recursion Example
+function factorial(n) {
+    if (n <= 1) return 1;
+    return n * factorial(n - 1);
+}
+console.log("Factorial of 5:", factorial(5));
+
+// Generate Random Users Example
+function generateRandomUsers(count = 5) {
+    return Array.from({ length: count }, () => Person.randomPerson().getFullName());
+}
+
+console.log("Random Users:", generateRandomUsers(3));
